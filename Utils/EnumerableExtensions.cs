@@ -110,6 +110,25 @@ namespace AdventOfCode2021.Utils
             input.Split("\n")
                 .Select(it => it.Trim()).ToList();
 
+        public static IEnumerable<List<string>> SplitIntoParagraphs(this string input)
+        {
+            var lines = input.SplitIntoLines();
+            var p = new List<string>();
+            foreach (var line in lines)
+            {
+                if (string.IsNullOrWhiteSpace(line))
+                {
+                    if (p.Any()) yield return p;
+                    p = new List<string>();
+                }
+                else
+                {
+                    p.Add(line);
+                }
+            }
+            if (p.Any()) yield return p;
+        }
+
         public static IEnumerable<(T, int)> WithIndices<T>(this IEnumerable<T> self) =>
             self.Select((it, index) => (it, index));
 
