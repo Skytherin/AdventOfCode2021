@@ -129,6 +129,19 @@ namespace AdventOfCode2021.Utils
             if (p.Any()) yield return p;
         }
 
+        public static IEnumerable<T> Range<T>(T first, int count, Func<T, T> generateNext)
+        {
+            var current = first;
+            while (count-- > 0)
+            {
+                yield return current;
+                if (count > 0)
+                {
+                    current = generateNext(current);
+                }
+            }
+        }
+
         public static IEnumerable<(T, int)> WithIndices<T>(this IEnumerable<T> self) =>
             self.Select((it, index) => (it, index));
 
