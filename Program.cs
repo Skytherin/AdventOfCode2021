@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using AdventOfCode2021.Utils;
@@ -13,6 +14,8 @@ namespace AdventOfCode2021
 
             var days = Assembly.GetExecutingAssembly()
                 .GetTypes()
+                .Where(type => !type.IsAbstract)
+                .Where(type => type.IsClass)
                 .Where(type => type.IsAssignableTo(typeof(IAdventOfCode)))
                 .Select(type => (type, StructuredRx.ParseOrDefault<DayClass>(type.Name)))
                 .Where(it => it.Item2 != null)
@@ -21,7 +24,7 @@ namespace AdventOfCode2021
 
             if (!regression)
             {
-                days = days.Skip(days.Count - 1).ToList();
+                days = EnumerableExtensions.ListFromItem(days.Last());
             }
 
             foreach (var day in days)

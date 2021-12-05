@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using AdventOfCode2015.Utils;
 using AdventOfCode2021.Utils;
-using FluentAssertions;
 using JetBrains.Annotations;
 
 namespace AdventOfCode2021.Days.Day05
 {
     [UsedImplicitly]
-    public class Day05 : IAdventOfCode
+    public class Day05 : AdventOfCode<List<Day05Input>>
     {
-        private string Input => File.ReadAllText("Days/Day05/Day05Input.txt");
-
-        const string Example = @"0,9 -> 5,9
+        public override string Example => @"0,9 -> 5,9
 8,0 -> 0,8
 9,4 -> 3,4
 2,2 -> 2,1
@@ -25,34 +21,19 @@ namespace AdventOfCode2021.Days.Day05
 0,0 -> 8,8
 5,5 -> 8,2";
 
-        private List<Day05Input> Parse(string s) => StructuredRx.ParseLines<Day05Input>(s);
+        public override List<Day05Input> Parse(string s) => StructuredRx.ParseLines<Day05Input>(s);
 
-        public void Run()
-        {
-            Part1();
-            Part2();
-        }
-
-        private void Part1()
-        {
-            Do1(Parse(Example)).Should().Be(5);
-            Do1(Parse(Input)).Should().Be(6225);
-        }
-
-        private void Part2()
-        {
-            Do2(Parse(Example)).Should().Be(12);
-            Do2(Parse(Input)).Should().Be(22116);
-        }
-
-        private int Do1(List<Day05Input> input)
+        [TestCase(Input.Example, 5)]
+        [TestCase(Input.File, 6225)]
+        public override int Part1(List<Day05Input> input)
         {
             bool IsOrthogonal(Day05Input it) => it.X1 == it.X2 || it.Y1 == it.Y2;
-            return Do2(input.Where(IsOrthogonal).ToList());
+            return Part2(input.Where(IsOrthogonal).ToList());
         }
 
-
-        private int Do2(List<Day05Input> input)
+        [TestCase(Input.Example, 12)]
+        [TestCase(Input.File, 22116)]
+        public override int Part2(List<Day05Input> input)
         {
             var grid = new Dictionary<Position, int>();
             foreach (var line in input)

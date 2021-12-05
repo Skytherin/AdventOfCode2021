@@ -1,45 +1,40 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using AdventOfCode2021.Utils;
-using FluentAssertions;
 using JetBrains.Annotations;
 
 namespace AdventOfCode2021.Days.Day01
 {
     [UsedImplicitly]
-    public class Day01 : IAdventOfCode
+    public class Day01 : AdventOfCode<List<int>>
     {
-        private List<int> Input => File.ReadAllLines("Days/Day01/Day01Input.txt").Select(it => Convert.ToInt32(it)).ToList();
+        public override string Example => @"199
+200
+208
+210
+200
+207
+240
+269
+260
+263";
 
-        public void Run()
+        public override List<int> Parse(string input) => input.Lines().Select(it => Convert.ToInt32(it)).ToList();
+
+        [TestCase(Input.Example, 7)]
+        [TestCase(Input.File, 1709)]
+
+        public override int Part1(List<int> input)
         {
-            Part1();
-            Part2();
+            return CountIncreases(input);
         }
 
-        private void Part1()
+        [TestCase(Input.Example, 5)]
+        [TestCase(Input.File, 1761)]
+        public override int Part2(List<int> input)
         {
-            CountIncreases(new[]{199, 200, 208, 210, 200, 207, 240, 269, 260, 263})
-                .Should().Be(7);
-
-            CountIncreases(Input)
-                .Should().Be(1709);
-        }
-
-        private void Part2()
-        {
-            Windows(new[] { 199, 200, 208, 210, 200, 207, 240, 269, 260, 263 })
-                .Should().Equal(607, 618, 618, 617, 647, 716, 769, 792);
-
-            CountIncreases(Windows(new []{199, 200, 208, 210, 200, 207, 240, 269, 260, 263}))
-                .Should().Be(5);
-
-            CountIncreases(Windows(Input))
-                .Should().Be(1761);
+            return CountIncreases(Windows(input));
         }
 
         private int CountIncreases(IEnumerable<int> input)

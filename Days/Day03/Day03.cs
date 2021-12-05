@@ -25,7 +25,7 @@ namespace AdventOfCode2021.Days.Day03
 00010
 01010";
 
-        private List<string> Parse(string s) => s.SplitIntoLines();
+        private List<string> Parse(string s) => s.Lines();
 
         public void Run()
         {

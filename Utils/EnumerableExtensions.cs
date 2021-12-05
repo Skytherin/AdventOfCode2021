@@ -18,6 +18,11 @@ namespace AdventOfCode2021.Utils
             }
         }
 
+        public static List<T> ListFromItem<T>(T item)
+        {
+            return new List<T> { item };
+        }
+
         public static Dictionary<TKey, List<T>> GroupToDictionary<T, TKey>(this IEnumerable<T> input, Func<T, TKey> keyFunc)
         {
             return input.GroupBy(keyFunc).ToDictionary(it => it.Key, it => it.ToList());
@@ -106,13 +111,13 @@ namespace AdventOfCode2021.Utils
         public static string Join<T>(this IEnumerable<T> self, string separator = "") =>
             string.Join(separator, self.Select(it => it?.ToString()));
 
-        public static List<string> SplitIntoLines(this string input) =>
+        public static List<string> Lines(this string input) =>
             input.Split("\n")
                 .Select(it => it.Trim()).ToList();
 
         public static IEnumerable<List<string>> SplitIntoParagraphs(this string input)
         {
-            var lines = input.SplitIntoLines();
+            var lines = input.Lines();
             var p = new List<string>();
             foreach (var line in lines)
             {
