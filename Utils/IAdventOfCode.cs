@@ -32,8 +32,8 @@ namespace AdventOfCode2021.Utils
 
         public abstract T Parse(string input);
 
-        public abstract int Part1(T input);
-        public abstract int Part2(T input);
+        public abstract long Part1(T input);
+        public abstract long Part2(T input);
 
         public virtual string Example => "";
     }
@@ -42,9 +42,9 @@ namespace AdventOfCode2021.Utils
     public class TestCaseAttribute: Attribute
     {
         public Input Input { get; }
-        public int Expected { get; }
+        public long Expected { get; }
 
-        public TestCaseAttribute(Input input, int expected)
+        public TestCaseAttribute(Input input, long expected)
         {
             Input = input;
             Expected = expected;

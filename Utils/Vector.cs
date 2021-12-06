@@ -1,4 +1,4 @@
-﻿namespace AdventOfCode2015.Utils
+﻿namespace AdventOfCode2021.Utils
 {
     public class Vector
     {

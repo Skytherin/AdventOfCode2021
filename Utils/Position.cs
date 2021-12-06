@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AdventOfCode2015.Utils
+namespace AdventOfCode2021.Utils
 {
     public class Position
     {
         public static Position Zero = new Position(0, 0);
-        public int X { get; }
-        public int Y { get; }
+        public long X { get; }
+        public long Y { get; }
 
-        public Position(int x, int y)
+        public Position(long x, long y)
         {
             X = x;
             Y = y;

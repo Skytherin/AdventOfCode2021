@@ -34,9 +34,19 @@ namespace AdventOfCode2021.Utils
                 actions[groupName] = g => property.SetValue(parent, Convert.ToInt32(g));
                 return $"(?<{groupName}>-?\\d+)";
             }
+            if (propertyType == typeof(long))
+            {
+                actions[groupName] = g => property.SetValue(parent, Convert.ToInt64(g));
+                return $"(?<{groupName}>-?\\d+)";
+            }
             if (propertyType == typeof(int?))
             {
                 actions[groupName] = g => property.SetValue(parent, string.IsNullOrWhiteSpace(g) ? null : Convert.ToInt32(g));
+                return $"(?<{groupName}>-?\\d+)";
+            }
+            if (propertyType == typeof(long?))
+            {
+                actions[groupName] = g => property.SetValue(parent, string.IsNullOrWhiteSpace(g) ? null : Convert.ToInt64(g));
                 return $"(?<{groupName}>-?\\d+)";
             }
             if (propertyType == typeof(string))

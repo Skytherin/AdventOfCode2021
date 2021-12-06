@@ -7,7 +7,7 @@ using JetBrains.Annotations;
 namespace AdventOfCode2021.Days.Day01
 {
     [UsedImplicitly]
-    public class Day01 : AdventOfCode<List<int>>
+    public class Day01 : AdventOfCode<List<long>>
     {
         public override string Example => @"199
 200
@@ -20,34 +20,34 @@ namespace AdventOfCode2021.Days.Day01
 260
 263";
 
-        public override List<int> Parse(string input) => input.Lines().Select(it => Convert.ToInt32(it)).ToList();
+        public override List<long> Parse(string input) => input.Lines().Select(it => Convert.ToInt64(it)).ToList();
 
         [TestCase(Input.Example, 7)]
         [TestCase(Input.File, 1709)]
 
-        public override int Part1(List<int> input)
+        public override long Part1(List<long> input)
         {
             return CountIncreases(input);
         }
 
         [TestCase(Input.Example, 5)]
         [TestCase(Input.File, 1761)]
-        public override int Part2(List<int> input)
+        public override long Part2(List<long> input)
         {
             return CountIncreases(Windows(input));
         }
 
-        private int CountIncreases(IEnumerable<int> input)
+        private long CountIncreases(IEnumerable<long> input)
         {
             return input.FirstAndRest((first, rest) => rest.Aggregate((0, first),
                 (accum, current) => (accum.Item1 + (current > accum.Item2 ? 1 : 0), current))
             ).Item1;
         }
 
-        private IEnumerable<int> Windows(IEnumerable<int> inputs)
+        private IEnumerable<long> Windows(IEnumerable<long> inputs)
         {
-            var three = new List<int>();
-            var sum = 0;
+            var three = new List<long>();
+            var sum = 0l;
             foreach (var input in inputs)
             {
                 sum += input;
@@ -71,7 +71,7 @@ namespace AdventOfCode2021.Days.Day01
             throw new ApplicationException();
         }
 
-        public static TResult ManyAndRest<T, TResult>(this IEnumerable<T> list, int take, Func<List<T>, IEnumerable<T>, TResult> action)
+        public static TResult ManyAndRest<T, TResult>(this IEnumerable<T> list, long take, Func<List<T>, IEnumerable<T>, TResult> action)
         {
             using var enumerator = list.GetEnumerator();
             var first = new List<T>();
