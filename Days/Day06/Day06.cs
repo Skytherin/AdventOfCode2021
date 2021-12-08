@@ -21,7 +21,7 @@ namespace AdventOfCode2021.Days.Day06
         }
 
         [TestCase(Input.Example, 26984457539)]
-        [TestCase(Input.File, 1702631502303)]
+        [TestCase(Input.File, 1_702_631_502_303)]
         public override long Part2(List<long> input)
         {
             return Run(input, 256);

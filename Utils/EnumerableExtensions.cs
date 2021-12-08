@@ -28,8 +28,20 @@ namespace AdventOfCode2021.Utils
             return input.GroupBy(keyFunc).ToDictionary(it => it.Key, it => it.ToList());
         }
 
+        public static Dictionary<T, List<T>> GroupToDictionary<T>(this IEnumerable<T> input)
+        {
+            return input.GroupToDictionary(it => it);
+        }
+
         public static T Mode<T>(this IEnumerable<T> self)
             => self.GroupBy(value => value).MaxBy(it => it.Count()).Key;
+
+        public static IEnumerable<T> Modes<T>(this IEnumerable<T> self)
+        {
+            var groups = self.GroupBy(value => value).ToList();
+            var max = groups.MaxBy(it => it.Count()).Count();
+            return groups.Where(it => it.Count() == max).Select(it => it.Key);
+        }
 
         // Flips rows and columns, eg:
         // [ [ 1, alpha, foo], [2, beta, bar] ] => [ [1, 2], [alpha, beta], [foo, bar] ]
@@ -114,6 +126,11 @@ namespace AdventOfCode2021.Utils
         public static List<string> Lines(this string input) =>
             input.Split("\n")
                 .Select(it => it.Trim()).ToList();
+
+        public static bool ContainsAll<T>(this IEnumerable<T> first, IEnumerable<T> other)
+        {
+            return !other.Except(first).Any();
+        }
 
         public static IEnumerable<List<string>> SplitIntoParagraphs(this string input)
         {

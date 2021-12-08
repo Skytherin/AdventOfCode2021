@@ -76,6 +76,32 @@ namespace AdventOfCode2021.Utils
                 return $@"(?<{groupName}>({group})(,\s*{group})*)";
             }
 
+            if (propertyType == typeof(List<string>))
+            {
+                var repeat = property.GetCustomAttribute<RxRepeat>() ?? new RxRepeat();
+
+                actions[groupName] = g =>
+                {
+                    var result = g.Split(" ", StringSplitOptions.RemoveEmptyEntries).ToList();
+                    property.SetValue(parent, result);
+                };
+
+                if (repeat.Min == 0 && repeat.Max == int.MaxValue)
+                {
+                    return $@"(?<{groupName}>\w+(\s+\w+)*)?";
+                }
+                if (repeat.Min == 1 && repeat.Max == int.MaxValue)
+                {
+                    return $@"(?<{groupName}>\w+(\s+\w+)*)";
+                }
+
+                if (repeat.Min == 0)
+                {
+                    return $@"(?<{groupName}>\w+(\s+\w+){{,{repeat.Max}}})?";
+                }
+                return $@"(?<{groupName}>\w+(\s+\w+){{{repeat.Min - 1},{repeat.Max}}})";
+            }
+
             if (propertyType.IsEnum)
             {
                 var mi = typeof(StructuredRx).GetMethod("GetEnumMap", BindingFlags.NonPublic | BindingFlags.Static);
@@ -137,7 +163,7 @@ namespace AdventOfCode2021.Utils
 
                 if (rxFormat.Before is { } before)
                 {
-                    altern += before;
+                    altern += Sanitize(before);
                     altern += @"\s*";
                 }
 
@@ -147,7 +173,7 @@ namespace AdventOfCode2021.Utils
 
                 if (rxFormat.After is { } after)
                 {
-                    altern += after;
+                    altern += Sanitize(after);
                     altern += @"\s*";
                 }
 
@@ -168,6 +194,12 @@ namespace AdventOfCode2021.Utils
             }
 
             return (pattern, instance);
+        }
+
+        private static string Sanitize(string after)
+        {
+            var replacables = new[] { '|', '+', '*', '\\', '[', '(', ']', ')'};
+            return after.Select(c => replacables.Contains(c) ? $"\\{c}" : $"{c}").Join();
         }
 
         private static object? ParseOrDefaultInternal(Type mainType, string input)

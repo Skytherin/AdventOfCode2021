@@ -14,4 +14,17 @@ namespace AdventOfCode2021.Utils
     public class RxAlternate : Attribute
     {
     }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public class RxRepeat : Attribute
+    {
+        public readonly int Min;
+        public readonly int Max;
+
+        public RxRepeat(int min = 0, int max = int.MaxValue)
+        {
+            Min = min;
+            Max = max;
+        }
+    }
 }
