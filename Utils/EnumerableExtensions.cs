@@ -164,18 +164,14 @@ namespace AdventOfCode2021.Utils
             }
         }
 
-        public static IEnumerable<(T, int)> WithIndices<T>(this IEnumerable<T> self) =>
+        public static IEnumerable<(T Value, int Index)> WithIndices<T>(this IEnumerable<T> self) =>
             self.Select((it, index) => (it, index));
 
         public static T Pop<T>(this List<T> self)
         {
-            if (self.Any())
-            {
-                var result = self.Last();
-                self.RemoveAt(self.Count - 1);
-                return result;
-            }
-            throw new ApplicationException("Attempt to pop empty list.");
+            var result = self.Last();
+            self.RemoveAt(self.Count - 1);
+            return result;
         }
 
         public static T Shift<T>(this List<T> self)

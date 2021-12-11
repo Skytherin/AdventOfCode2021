@@ -2,15 +2,15 @@
 {
     public class Vector
     {
-        public static readonly Vector North = new Vector(0, -1);
-        public static readonly Vector East = new Vector(1, 0);
-        public static readonly Vector South = new Vector(0, +1);
-        public static readonly Vector West = new Vector(-1, 0);
+        public static readonly Vector North = new(-1, 0);
+        public static readonly Vector East = new(0, 1);
+        public static readonly Vector South = new(1, 0);
+        public static readonly Vector West = new(0, -1);
 
         public int dX { get; }
         public int dY { get; }
 
-        public Vector(int dx, int dy)
+        public Vector(int dy, int dx)
         {
             dX = dx;
             dY = dy;
@@ -18,12 +18,15 @@
 
         public static Vector operator +(Vector a, Vector b)
         {
-            return new Vector(a.dX + b.dX, a.dY + b.dY);
+            return new Vector(a.dY + b.dY, a.dX + b.dX);
         }
 
         public static Vector operator *(Vector a, int magnitude)
         {
-            return new Vector(a.dX * magnitude, a.dY * magnitude);
+            return new Vector(a.dY * magnitude, a.dX * magnitude);
         }
+
+        public Vector RotateRight() => new(dX, -dY);
+        public Vector RotateLeft() => new(-dX, dY);
     }
 }

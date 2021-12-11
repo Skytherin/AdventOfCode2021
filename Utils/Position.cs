@@ -5,11 +5,11 @@ namespace AdventOfCode2021.Utils
 {
     public class Position
     {
-        public static Position Zero = new Position(0, 0);
+        public static Position Zero = new(0, 0);
         public long X { get; }
         public long Y { get; }
 
-        public Position(long x, long y)
+        public Position(long y, long x)
         {
             X = x;
             Y = y;
@@ -27,7 +27,7 @@ namespace AdventOfCode2021.Utils
 
         public static Position operator +(Position p, Vector vector)
         {
-            return new Position(p.X + vector.dX, p.Y + vector.dY);
+            return new Position(p.Y + vector.dY, p.X + vector.dX);
         }
 
         public long ManhattanDistance()

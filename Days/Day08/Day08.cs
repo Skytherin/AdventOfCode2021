@@ -45,47 +45,25 @@ gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
             var seven = inputs.Single(it => it.Length == 3);
             var eight = inputs.Single(it => it.Length == 7);
 
-            var nine = inputs.Where(it => it.Length == 6).Where(it => it.ContainsAll(four))
-
-            var top = seven.Except(one).Join();
-
-            var topLeftAndMiddle = four.Except(one).Join();
-            var bottomAndBottomLeft = eight.Except(seven).Except(four).ToList();
-
-            var nine = inputs.Where(it => it.Length == 6).Single(it => bottomAndBottomLeft.Contains(eight.Except(it).Single()));
-            var bottomLeft = eight.Except(nine).Join();
-            var bottom = bottomAndBottomLeft.Except(bottomLeft).Join();
-
-            var zero = inputs.Where(it => it.Length == 6).Single(it => topLeftAndMiddle.Contains(eight.Except(it).Single()));
-            var middle = eight.Except(zero).Join();
-            var topLeft = topLeftAndMiddle.Except(middle).Join();
-
-            var twoThreeFive = inputs.Where(it => it.Length == 5).ToList();
-
-            var threeWires = seven.Union(middle).Union(bottom).Join();
-            var three = twoThreeFive.Single(it => it.All(c => threeWires.Contains(c)));
-            var twoFive = twoThreeFive.Where(it => it != three).ToList();
-
-            var two = twoFive.Single(it => it.Contains(bottomLeft.Single()));
-
-            var bottomRight = one.Except(two).Join();
-            var topRight = one.Except(bottomRight).Join();
-
-            var five = top.Union(bottom).Union(middle).Union(topLeft).Union(bottomRight).Join();
-            var six = five.Union(bottomLeft).Join();
+            var two = inputs.Where(it => it.Length == 5).Single(it => it.Intersect(four).Count() == 2);
+            var three = inputs.Where(it => it.Length == 5).Single(it => it.ContainsAll(one));
+            var five = inputs.Where(it => it.Length == 5).Single(it => it != three && it != two);
+            var nine = inputs.Where(it => it.Length == 6).Single(it => it.ContainsAll(four));
+            var six = inputs.Where(it => it.Length == 6).Single(it => it != nine &&  it.ContainsAll(five));
+            var zero = inputs.Where(it => it.Length == 6).Single(it => it != six && it != nine);
 
             var known = new List<string>
             {
-                Sort(zero),
-                Sort(one),
-                Sort(two),
-                Sort(three),
-                Sort(four),
-                Sort(five),
-                Sort(six),
-                Sort(seven),
-                Sort(eight),
-                Sort(nine)
+                zero,
+                one,
+                two,
+                three,
+                four,
+                five,
+                six,
+                seven,
+                eight,
+                nine
             };
 
             return DecodeOutputs(pattern.Outputs, known);
@@ -93,32 +71,22 @@ gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
 
         private long DecodeOutputs(List<string> outputs, List<string> known)
         {
-            var temp = outputs.Select(it => DecodeOutput(Sort(it), known)).ToList();
-            return temp.Aggregate((accum, value) => accum * 10 + value);
+            return outputs.Select(it => DecodeOutput(Sort(it), known))
+                .Aggregate((accum, value) => accum * 10 + value);
         }
 
-        private long DecodeOutput(string output, List<string> known)
+        private long DecodeOutput(string needle, List<string> known)
         {
-            var i = known.IndexOf(Sort(output));
-            if (i < 0) throw new ApplicationException();
-            return i;
+            return known.WithIndices()
+                .Where(haystack => haystack.Value == needle)
+                .Select(haystack => haystack.Index)
+                .Single();
         }
 
         private string Sort(string s)
         {
             return s.OrderBy(c => c).Join();
         }
-    }
-
-    public enum Segment
-    {
-        Top,
-        Middle,
-        Bottom,
-        UpperLeft,
-        UpperRight,
-        LowerLeft,
-        LowerRight
     }
 
     public class SignalPattern
