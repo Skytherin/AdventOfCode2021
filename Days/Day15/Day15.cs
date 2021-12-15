@@ -80,9 +80,4 @@ namespace AdventOfCode2021.Days.Day15
             return start.Orthogonals().Where(adjacent => adjacent.X >= 0 && adjacent.Y >= 0 && adjacent.X < columns && adjacent.Y < rows);
         }
     }
-    public record Day15Node(Position Head, List<Position> Visited, long TrueDistance, long EstimatedDistance);
-
-    public static class Day15Extensions
-    {
-    }
 }
