@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using AdventOfCode2021.Utils;
-using FluentAssertions;
-using FluentAssertions.Common;
 using JetBrains.Annotations;
 
 namespace AdventOfCode2021.Days.Day15
@@ -24,14 +22,14 @@ namespace AdventOfCode2021.Days.Day15
 
         public override List<List<int>> Parse(string input) => input.Lines().Select(it => it.Select(c => Convert.ToInt32($"{c}")).ToList()).ToList();
 
-        //[TestCase(Input.Example, 40)]
-        //[TestCase(Input.File, 562)]
+        [TestCase(Input.Example, 40)]
+        [TestCase(Input.File, 562)]
         public override long Part1(List<List<int>> input)
         {
-            return PathFind(input);
+            return PathFind2(input);
         }
 
-        //[TestCase(Input.Example, 315)]
+        [TestCase(Input.Example, 315)]
         [TestCase(Input.File, 2874)]
         public override long Part2(List<List<int>> input)
         {
@@ -50,83 +48,37 @@ namespace AdventOfCode2021.Days.Day15
                 .Select(row => row.GroupBy(it => it.Item1.X).OrderBy(col => col.Key).SelectMany(col => col.Select(it => it.Value)).ToList())
                 .ToList();
 
-            return PathFind(temp);
+            return PathFind2(temp);
         }
 
-        private long PathFind(List<List<int>> grid)
+        private long PathFind2(List<List<int>> input)
         {
-            var rows = grid.Count;
-            var columns = grid[0].Count;
-            var goal = new Position(rows-1, columns-1);
-            var open = new LinkedList<Day15Node>();
-            open.AddFirst(new Day15Node(Position.Zero, new List<Position> { Position.Zero }, 0, 0));
-
-            var shortestRoutes = new Dictionary<Position, long>();
-
-            while (open.Any())
+            var rows = input.Count;
+            var columns = input[0].Count;
+            var goal = new Position(rows - 1, columns - 1);
+            var open = new PriorityQueue<(Position Position, long TrueDistance, long EstimatedDistance)>(it => it.EstimatedDistance);
+            open.Enqueue((Position.Zero, 0, goal.ManhattanDistance()));
+            var closed = new HashSet<Position> { Position.Zero };
+            while (open.Count > 0)
             {
-                var current = open.Shift();
-
-                if (shortestRoutes.TryGetValue(current.Head, out var shortest))
+                var current = open.Dequeue();
+                foreach (var adjacent in Adjacents(current.Position, rows, columns))
                 {
-                    if (shortest <= current.TrueDistance) continue;
-                }
-
-                shortestRoutes[current.Head] = current.TrueDistance;
-
-                foreach (var adjacent in Adjacents(current.Head, rows, columns))
-                {
-                    if (shortestRoutes.TryGetValue(adjacent, out var shortest2))
-                    {
-                        if (shortest2 <= current.TrueDistance + grid[(int)goal.Y][(int)goal.X]) continue;
-                    }
-
-                    shortestRoutes[current.Head] = current.TrueDistance;
-
-                    if (adjacent.Equals(goal)) return current.TrueDistance + grid[(int)goal.Y][(int)goal.X];
-                    if (current.Visited.Contains(adjacent)) continue;
-                    AddSorted(open, current.AddPoint(adjacent, grid));
+                    var adjacentTrueDistance = current.TrueDistance + input[(int)adjacent.Y][(int)adjacent.X];
+                    if (adjacent == goal) return adjacentTrueDistance;
+                    if (closed.Contains(adjacent)) continue;
+                    closed.Add(adjacent);
+                    open.Enqueue((adjacent, adjacentTrueDistance, adjacentTrueDistance + goal.ManhattanDistance(adjacent)));
                 }
             }
 
             throw new ApplicationException();
         }
 
-        private void AddSorted(LinkedList<Day15Node> open, Day15Node newItem)
-        {
-            var sortValue = newItem.TrueDistance + newItem.EstimatedDistance;
-            for (var current = open.First; current != null; current = current.Next)
-            {
-                if ((current.Value.EstimatedDistance + current.Value.TrueDistance) <= sortValue) continue;
-                open.AddBefore(current, newItem);
-                return;
-            }
-
-            open.AddLast(newItem);
-        }
 
         private IEnumerable<Position> Adjacents(Position start, int rows, int columns)
         {
             return start.Orthogonals().Where(adjacent => adjacent.X >= 0 && adjacent.Y >= 0 && adjacent.X < columns && adjacent.Y < rows);
-        }
-    }
-
-    public record Day15Node(Position Head, List<Position> Visited, long TrueDistance, long EstimatedDistance);
-
-    public static class Day15Extensions
-    {
-        public static Day15Node AddPoint(this Day15Node self, Position p, List<List<int>> grid)
-        {
-            return new Day15Node(p, self.Visited.Append(p).ToList(), self.TrueDistance + grid[(int)p.Y][(int)p.X],
-                EstimateDistance(p, grid));
-        }
-
-        private static long EstimateDistance(Position p, List<List<int>> grid)
-        {
-            var rows = grid.Count;
-            var columns = grid[0].Count;
-            var goal = new Position(rows - 1, columns - 1);
-            return p.ManhattanDistance(goal);
         }
     }
 }
