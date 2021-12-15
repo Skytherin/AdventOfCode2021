@@ -34,7 +34,7 @@ namespace AdventOfCode2021.Days.Day01
         [TestCase(Input.File, 1761)]
         public override long Part2(List<long> input)
         {
-            return CountIncreases(Windows(input));
+            return CountIncreases(input.Windows(3).Select(window => window.Sum()));
         }
 
         private long CountIncreases(IEnumerable<long> input)
@@ -42,19 +42,6 @@ namespace AdventOfCode2021.Days.Day01
             return input.FirstAndRest((first, rest) => rest.Aggregate((0, first),
                 (accum, current) => (accum.Item1 + (current > accum.Item2 ? 1 : 0), current))
             ).Item1;
-        }
-
-        private IEnumerable<long> Windows(IEnumerable<long> inputs)
-        {
-            var three = new List<long>();
-            var sum = 0l;
-            foreach (var input in inputs)
-            {
-                sum += input;
-                three.Add(input);
-                if (three.Count > 3) sum -= three.Shift();
-                if (three.Count == 3) yield return sum;
-            }
         }
     }
     public static class Whatever

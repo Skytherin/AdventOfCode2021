@@ -6,6 +6,20 @@ namespace AdventOfCode2021.Utils
 {
     public static class EnumerableExtensions
     {
+        public static IEnumerable<List<T>> Windows<T>(this IEnumerable<T> self, int windowSize)
+        {
+            var queue = new Queue<T>();
+            foreach (var item in self)
+            {
+                queue.Enqueue(item);
+                if (queue.Count == windowSize)
+                {
+                    yield return queue.ToList();
+                    queue.Dequeue();
+                }
+            }
+        }
+
         public static IEnumerable<(T first, T second)> Pairs<T>(this IEnumerable<T> self)
         {
             var l = self.ToList();
@@ -132,7 +146,7 @@ namespace AdventOfCode2021.Utils
             return !other.Except(first).Any();
         }
 
-        public static IEnumerable<List<string>> SplitIntoParagraphs(this string input)
+        public static IEnumerable<List<string>> Paragraphs(this string input)
         {
             var lines = input.Lines();
             var p = new List<string>();
@@ -174,12 +188,12 @@ namespace AdventOfCode2021.Utils
             return result;
         }
 
-        public static T Shift<T>(this List<T> self)
+        public static T Shift<T>(this LinkedList<T> self)
         {
             if (self.Any())
             {
                 var result = self.First();
-                self.RemoveAt(0);
+                self.RemoveFirst();
                 return result;
             }
             throw new ApplicationException("Attempt to shift empty list.");

@@ -30,12 +30,32 @@ namespace AdventOfCode2021.Utils
             return new Position(p.Y + vector.dY, p.X + vector.dX);
         }
 
+        public static bool operator ==(Position p, Position p2)
+        {
+            return p.Equals(p2);
+        }
+
+        public static bool operator !=(Position p, Position p2)
+        {
+            return !(p == p2);
+        }
+
+        public static Position operator -(Position p, Position p2)
+        {
+            return new Position(p.Y - p2.Y, p.X - p2.X);
+        }
+
         public long ManhattanDistance()
         {
             return Math.Abs(X) + Math.Abs(Y);
         }
 
-        public IEnumerable<Position> Orthogonal()
+        public long ManhattanDistance(Position other)
+        {
+            return (this - other).ManhattanDistance();
+        }
+
+        public IEnumerable<Position> Orthogonals()
         {
             yield return North;
             yield return South;

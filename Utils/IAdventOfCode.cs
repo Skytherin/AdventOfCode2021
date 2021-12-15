@@ -1,8 +1,8 @@
 ﻿using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using FluentAssertions;
-using JetBrains.Annotations;
 
 namespace AdventOfCode2021.Utils
 {
@@ -11,24 +11,44 @@ namespace AdventOfCode2021.Utils
         void Run();
     }
 
-    public abstract class AdventOfCode<T>: IAdventOfCode
+    public static class AdventOfCodeExtensions
+    {
+        public static string File(this IAdventOfCode self) => System.IO.File.ReadAllText($"Days/{self.GetType().Name}/Input.txt");
+    }
+
+    public abstract class AdventOfCode<T> : IAdventOfCode
     {
         public void Run()
         {
-            var example = Parse(Example);
-            var classname = GetType().Name;
-            var file = Parse(File.ReadAllText($"Days/{classname}/Input.txt"));
-            var testCases = GetType().GetMethod("Part1")!.GetCustomAttributes<TestCaseAttribute>();
-            foreach (var testCase in testCases)
+            var example = new List<T>();
+            var file = new List<T>();
+
+            var part1TestCases = GetType().GetMethod("Part1")!.GetCustomAttributes<TestCaseAttribute>().ToList();
+            var part2TestCases = GetType().GetMethod("Part2")!.GetCustomAttributes<TestCaseAttribute>().ToList();
+
+            if (part1TestCases.Union(part2TestCases).Any(it => it.Input == Input.Example))
             {
-                Part1(testCase.Input == Input.Example ? example : file).Should().Be(testCase.Expected);
+                example.Add(Parse(Example));
             }
-            testCases = GetType().GetMethod("Part2")!.GetCustomAttributes<TestCaseAttribute>();
-            foreach (var testCase in testCases)
+
+            if (part1TestCases.Union(part2TestCases).Any(it => it.Input == Input.File))
             {
-                Part2(testCase.Input == Input.Example ? example : file).Should().Be(testCase.Expected);
+                file.Add(Parse(this.File()));
+            }
+
+            foreach (var testCase in part1TestCases)
+            {
+                TestCase = testCase;
+                Part1(testCase.Input == Input.Example ? example[0] : file[0]).Should().Be(testCase.Expected);
+            }
+            foreach (var testCase in part2TestCases)
+            {
+                TestCase = testCase;
+                Part2(testCase.Input == Input.Example ? example[0] : file[0]).Should().Be(testCase.Expected);
             }
         }
+
+        protected TestCaseAttribute TestCase { get; private set; }
 
         public abstract T Parse(string input);
 

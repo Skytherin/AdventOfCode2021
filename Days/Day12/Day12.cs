@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using AdventOfCode2021.Utils;
 using FluentAssertions;
@@ -87,16 +89,17 @@ start-NF").Should().Be(5076);
             var adjacencies = caves.ToDictionary(it => it, _ => new HashSet<string>());
             foreach (var input in inputs)
             {
-                adjacencies[input.Node1].Add(input.Node2);
-                adjacencies[input.Node2].Add(input.Node1);
+                if (input.Node2 != "start") adjacencies[input.Node1].Add(input.Node2);
+                if (input.Node1 != "start") adjacencies[input.Node2].Add(input.Node1);
             }
 
             var smallCaves = caves.Where(it => it.ToLower() == it).ToHashSet();
-            var open = new[] { (Head: "start", Path: new List<string> { "start" } as IReadOnlyList<string>, RevisitAllowed: revisitAllowed) }.ToList();
+            var open = new Queue<(string Head, List<string> Path, bool RevisitAllowed)>();
+            open.Enqueue(("start", new List<string>(), revisitAllowed));
             var found = 0;
-            while (open.Any())
+            while (open.Count > 0)
             {
-                var current = open.Shift();
+                var current = open.Dequeue();
 
                 foreach (var adjacentCave in adjacencies[current.Head])
                 {
@@ -104,7 +107,6 @@ start-NF").Should().Be(5076);
                     if (smallCaves.Contains(adjacentCave) && current.Path.Contains(adjacentCave))
                     {
                         if (!revisit) continue;
-                        if (adjacentCave == "start") continue;
                         revisit = false;
                     }
 
@@ -114,12 +116,45 @@ start-NF").Should().Be(5076);
                     }
                     else
                     {
-                        open.Add((Head: adjacentCave, Path: current.Path.Append(adjacentCave).ToList(), RevisitAllowed: revisit));
+                        open.Enqueue((Head: adjacentCave, Path: current.Path.Append(adjacentCave).ToList(), RevisitAllowed: revisit));
                     }
                 }
             }
 
             return found;
+        }
+
+        private int Do1__(string s, bool revisitAllowed = false)
+        {
+            var inputs = StructuredRx.ParseLines<ConnectedNodes>(s);
+
+            var caves = inputs.SelectMany(it => new[] { it.Node1, it.Node2 }).Distinct().ToList();
+
+            var adjacencies = caves.ToDictionary(it => it, _ => new HashSet<string>());
+            foreach (var input in inputs)
+            {
+                adjacencies[input.Node1].Add(input.Node2);
+                adjacencies[input.Node2].Add(input.Node1);
+            }
+
+            return adjacencies["start"].Sum(next => dfs(adjacencies, next, new List<string>(), revisitAllowed));
+        }
+
+        private int dfs(Dictionary<string, HashSet<string>> adjacencies, string cave, IReadOnlyList<string> visited, bool revisitAllowed)
+        {
+            if (cave == "start") return 0;
+            if (cave == "end") return 1;
+            var vallowed = revisitAllowed;
+            if (cave == cave.ToLower())
+            {
+                var count = visited.Count(it => it == cave);
+                if (count == 1 && !revisitAllowed) return 0;
+                if (count == 1) vallowed = false;
+                if (count >= 2) return 0;
+                visited = visited.Append(cave).ToList();
+            }
+
+            return adjacencies[cave].Sum(next => dfs(adjacencies, next, visited, vallowed));
         }
 
 

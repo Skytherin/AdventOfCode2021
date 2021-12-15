@@ -17,7 +17,7 @@ namespace AdventOfCode2021.Utils
 
         public static List<T> ParseLines<T>(string input)
         {
-            return input.Lines().Select(StructuredRx.Parse<T>).ToList();
+            return input.Lines().Select(Parse<T>).ToList();
         }
 
         public static T? ParseOrDefault<T>(string input)

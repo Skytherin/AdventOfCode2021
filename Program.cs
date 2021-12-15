@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using AdventOfCode2021.Days.Day01;
 using AdventOfCode2021.Utils;
 
 namespace AdventOfCode2021
@@ -26,11 +27,12 @@ namespace AdventOfCode2021
                 days = EnumerableExtensions.ListFromItem(days.Last());
             }
 
+            new Day01().Run(); // This (somehow) "warms up" the system so the time output does not include the warmup time
             foreach (var day in days)
             {
                 Console.Write(day.type.Name);
-                var start = DateTime.Now;
                 var instance = (IAdventOfCode)day.type.GetConstructor(new Type[] { })!.Invoke(new object?[] { });
+                var start = DateTime.Now;
                 instance.Run();
                 var stop = DateTime.Now;
                 Console.WriteLine($"  {(stop - start).TotalSeconds:N3}s");

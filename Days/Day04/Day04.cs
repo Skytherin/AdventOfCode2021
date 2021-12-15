@@ -108,7 +108,7 @@ namespace AdventOfCode2021.Days.Day04
 
         public BingoGame(string data)
         {
-            var paragraphs = data.SplitIntoParagraphs().ToList();
+            var paragraphs = data.Paragraphs().ToList();
             Calls = paragraphs[0].Single().Split(",").Select(it => Convert.ToInt32(it)).ToList();
             foreach (var p in paragraphs.Skip(1))
             {
