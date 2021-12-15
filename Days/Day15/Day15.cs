@@ -26,7 +26,7 @@ namespace AdventOfCode2021.Days.Day15
         [TestCase(Input.File, 562)]
         public override long Part1(List<List<int>> input)
         {
-            return PathFind2(input);
+            return PathFind(input);
         }
 
         [TestCase(Input.Example, 315)]
@@ -48,27 +48,26 @@ namespace AdventOfCode2021.Days.Day15
                 .Select(row => row.GroupBy(it => it.Item1.X).OrderBy(col => col.Key).SelectMany(col => col.Select(it => it.Value)).ToList())
                 .ToList();
 
-            return PathFind2(temp);
+            return PathFind(temp);
         }
 
-        private long PathFind2(List<List<int>> input)
+        private long PathFind(List<List<int>> input)
         {
             var rows = input.Count;
             var columns = input[0].Count;
             var goal = new Position(rows - 1, columns - 1);
-            var open = new PriorityQueue<(Position Position, long TrueDistance, long EstimatedDistance)>(it => it.EstimatedDistance);
-            open.Enqueue((Position.Zero, 0, goal.ManhattanDistance()));
+            var open = new PriorityQueue<(Position Position, long Distance)>(it => it.Distance);
+            open.Enqueue((Position.Zero, 0));
             var closed = new HashSet<Position> { Position.Zero };
             while (open.Count > 0)
             {
                 var current = open.Dequeue();
                 foreach (var adjacent in Adjacents(current.Position, rows, columns))
                 {
-                    var adjacentTrueDistance = current.TrueDistance + input[(int)adjacent.Y][(int)adjacent.X];
-                    if (adjacent == goal) return adjacentTrueDistance;
+                    if (adjacent == goal) return current.Distance + input[(int)adjacent.Y][(int)adjacent.X];
                     if (closed.Contains(adjacent)) continue;
                     closed.Add(adjacent);
-                    open.Enqueue((adjacent, adjacentTrueDistance, adjacentTrueDistance + goal.ManhattanDistance(adjacent)));
+                    open.Enqueue((adjacent, current.Distance + input[(int)adjacent.Y][(int)adjacent.X]));
                 }
             }
 
@@ -80,5 +79,10 @@ namespace AdventOfCode2021.Days.Day15
         {
             return start.Orthogonals().Where(adjacent => adjacent.X >= 0 && adjacent.Y >= 0 && adjacent.X < columns && adjacent.Y < rows);
         }
+    }
+    public record Day15Node(Position Head, List<Position> Visited, long TrueDistance, long EstimatedDistance);
+
+    public static class Day15Extensions
+    {
     }
 }
