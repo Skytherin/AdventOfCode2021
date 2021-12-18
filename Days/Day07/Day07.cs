@@ -19,7 +19,7 @@ namespace AdventOfCode2021.Days.Day07
         {
             var groups = input.GroupBy(it => it).ToDictionary(it => it.Key, it => it.Count());
             return groups
-                .Select(proposed => groups.Aggregate(0L, (accum, item) => accum + MoreMath.Abs(item.Key - proposed.Key) * item.Value))
+                .Select(proposed => groups.Aggregate(0L, (accum, item) => accum + LMath.Abs(item.Key - proposed.Key) * item.Value))
                 .Min();
         }
 
@@ -29,13 +29,8 @@ namespace AdventOfCode2021.Days.Day07
         {
             var groups = input.GroupBy(it => it).ToDictionary(it => it.Key, it => it.Count());
             return Enumerable.Range((int)groups.Keys.Min(), (int)(groups.Keys.Max() - groups.Keys.Min() + 1))
-                .Select(proposed => groups.Aggregate(0L, (accum, item) => accum + Triangle(MoreMath.Abs(item.Key - proposed)) * item.Value))
+                .Select(proposed => groups.Aggregate(0L, (accum, item) => accum + LMath.Triangle(LMath.Abs(item.Key - proposed)) * item.Value))
                 .Min();
-        }
-
-        private long Triangle(long value)
-        {
-            return value * (value + 1) / 2;
         }
     }
 }

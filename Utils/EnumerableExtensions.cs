@@ -6,6 +6,32 @@ namespace AdventOfCode2021.Utils
 {
     public static class EnumerableExtensions
     {
+        public static long Product(this IEnumerable<long> self)
+        {
+            return self.Aggregate((current, value) => current * value);
+        }
+
+        public static long ToLong(this IEnumerable<bool> self)
+        {
+            return self.Aggregate(0L, (current, value) => current * 2 + (value ? 1 : 0));
+        }
+
+        public static List<T> DequeueList<T>(this Queue<T> self, long count)
+        {
+            var result = new List<T>();
+            for (var i = 0; i < count; i++)
+            {
+                result.Add(self.Dequeue());
+            }
+
+            return result;
+        }
+
+        public static Queue<T> ToQueue<T>(this IEnumerable<T> self)
+        {
+            return new Queue<T>(self);
+        }
+
         public static IEnumerable<List<T>> Windows<T>(this IEnumerable<T> self, int windowSize)
         {
             var queue = new Queue<T>();

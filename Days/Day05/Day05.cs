@@ -37,10 +37,10 @@ namespace AdventOfCode2021.Days.Day05
             var grid = new Dictionary<Position, long>();
             foreach (var line in input)
             {
-                var dX = MoreMath.Sign(line.X2 - line.X1);
-                var dY = MoreMath.Sign(line.Y2 - line.Y1);
-                var stepsX = MoreMath.Abs(line.X2 - line.X1) + 1;
-                var stepsY = MoreMath.Abs(line.Y2 - line.Y1) + 1;
+                var dX = LMath.Sign(line.X2 - line.X1);
+                var dY = LMath.Sign(line.Y2 - line.Y1);
+                var stepsX = LMath.Abs(line.X2 - line.X1) + 1;
+                var stepsY = LMath.Abs(line.Y2 - line.Y1) + 1;
                 var steps = Math.Max(stepsX, stepsY);
                 for (var step = 0; step < steps; step++)
                 {
