@@ -14,6 +14,15 @@ namespace AdventOfCode2021.Days.Day18
     {
         public void Run()
         {
+            var start = DateTime.Now;
+
+            void Log()
+            {
+                var now = DateTime.Now;
+                Console.WriteLine((now - start).TotalMilliseconds);
+                start = now;
+            }
+
             Console.WriteLine();
             var sfn = new SnailFishNumber("[1,2]");
             var sfn2 = new SnailFishNumber("[[3,4],5]");
@@ -27,6 +36,7 @@ namespace AdventOfCode2021.Days.Day18
 
             new SnailFishNumber("[10,0]").Split().ToString().Should().Be("[[5,5],0]");
             new SnailFishNumber("[0,[0,11]]").Split().ToString().Should().Be("[0,[0,[5,6]]]");
+            new SnailFishNumber("[0,[12,9]]").Split().ToString().Should().Be("[0,[[6,6],9]]");
 
             (S("[[[[4,3],4],4],[7,[[8,4],9]]]") + S("[1,1]")).Reduce().ToString().Should().Be("[[[[0,7],4],[[7,8],[6,0]]],[8,1]]");
 
@@ -34,13 +44,14 @@ namespace AdventOfCode2021.Days.Day18
                 .Lines()
                 .Select(S)
                 .ToList();
-            
+            Log();
             input.Aggregate((current, next) => (current + next).Reduce())
                 .Magnitude()
                 .Should().Be(4124);
-
+            Log();
             input.SelectMany(left => input.Select(right => left == right ? 0 : (left + right).Reduce().Magnitude()))
                 .Max().Should().Be(4673);
+            Log();
         }
 
         private SnailFishNumber S(string s) => new(s);
@@ -68,12 +79,20 @@ namespace AdventOfCode2021.Days.Day18
             return Value.Map(it => it.ToString(), it => it.ToString());
         }
 
-        public string ToStringSpecial(Func<SnailNode, bool> matcher, Func<SnailNode, string> transform,
+        public SnailNode Transform(
             Func<SnailFishNumber, bool> sfnMatch,
-            Func<SnailFishNumber, string> sfnTransform)
+            Func<SnailFishNumber, SnailNode> sfnTransform,
+            Func<SnailNode, bool> nodeMatch,
+            Func<SnailNode, SnailNode> nodeTransform)
         {
-            if (matcher(this)) return transform(this);
-            return Value.Map(it => it.ToString(), it => it.ToStringSpecial(matcher, transform, sfnMatch, sfnTransform));
+            if (AsSnailFishNumber is { } sfn)
+            {
+                if (sfnMatch(sfn)) return sfnTransform(sfn);
+                if (nodeMatch(this)) return nodeTransform(this);
+                return new SnailNode(sfn.Transform(sfnMatch, sfnTransform, nodeMatch, nodeTransform));
+            }
+            if (nodeMatch(this)) return nodeTransform(this);
+            return this;
         }
     }
 
@@ -99,19 +118,30 @@ namespace AdventOfCode2021.Days.Day18
             (remainder1 ?? remainder2 ?? throw new ApplicationException()).Length.Should().Be(0);
         }
 
-        public static bool operator ==(SnailFishNumber lhs, SnailFishNumber rhs)
+        private SnailFishNumber(SnailNode lhs, SnailNode rhs)
         {
-            return lhs.StringRep == rhs.StringRep;
+            StringRep = $"[{lhs},{rhs}]";
+            Left = lhs;
+            Right = rhs;
         }
 
-        public static bool operator !=(SnailFishNumber lhs, SnailFishNumber rhs)
+        private SnailFishNumber(SnailFishNumber lhs, SnailFishNumber rhs)
         {
-            return !(lhs == rhs);
+            StringRep = $"[{lhs},{rhs}]";
+            Left = new SnailNode(lhs);
+            Right = new SnailNode(rhs);
+        }
+
+        private SnailFishNumber(long lhs, long rhs)
+        {
+            StringRep = $"[{lhs},{rhs}]";
+            Left = new SnailNode(lhs);
+            Right = new SnailNode(rhs);
         }
 
         public static SnailFishNumber operator +(SnailFishNumber lhs, SnailFishNumber rhs)
         {
-            return new SnailFishNumber($"[{lhs},{rhs}]");
+            return new SnailFishNumber(lhs, rhs);
         }
 
         public SnailFishNumber Reduce()
@@ -119,19 +149,11 @@ namespace AdventOfCode2021.Days.Day18
             var result = this;
             while (true)
             {
-                var exploded = result.Explode();
-                if (exploded != result)
-                {
-                    result = exploded;
-                    continue;
-                }
-                var split = result.Split();
-                if (split != result)
-                {
-                    result = split;
-                    continue;
-                }
-                break;
+                var tail = result;
+                result = result.Explode();
+                if (result.StringRep != tail.StringRep) continue;
+                result = result.Split();
+                if (result.StringRep == tail.StringRep) break;
             }
 
             return result;
@@ -164,13 +186,13 @@ namespace AdventOfCode2021.Days.Day18
 
         public long Magnitude()
         {
-            return Left.Value.Map(it => it, it => it.Magnitude()) * 3
-                   + Right.Value.Map(it => it, it => it.Magnitude()) * 2;
+            long X(SnailNode node) => node.Value.Map(it => it, it => it.Magnitude());
+            return X(Left) * 3 + X(Right) * 2;
         }
 
         public SnailNode ParseLong(string s, out string? remainder)
         {
-            var n = s.TakeWhile(c => IsNumber(c)).Join();
+            var n = s.TakeWhile(IsNumber).Join();
             remainder = s.Substring(n.Length);
             return new SnailNode(Convert.ToInt64(n));
         }
@@ -185,14 +207,6 @@ namespace AdventOfCode2021.Days.Day18
             return StringRep;
         }
 
-        public string ToStringSpecial(Func<SnailNode, bool> matcher, Func<SnailNode, string> transform, 
-            Func<SnailFishNumber, bool> sfnMatch,
-            Func<SnailFishNumber, string> sfnTransform)
-        {
-            if (sfnMatch(this)) return sfnTransform(this);
-            return $"[{Left.ToStringSpecial(matcher, transform, sfnMatch, sfnTransform)},{Right.ToStringSpecial(matcher, transform, sfnMatch, sfnTransform)}]";
-        }
-
         public SnailFishNumber Split()
         {
             var leaf = Nodes()
@@ -200,9 +214,13 @@ namespace AdventOfCode2021.Days.Day18
 
             if (leaf == null) return this;
 
-            var newNode = $"[{leaf.AsLong / 2},{(leaf.AsLong / 2) + (leaf.AsLong % 2) }]";
+            var newNumber = new SnailFishNumber((long)leaf.AsLong / 2, (long)leaf.AsLong / 2 + ((long)leaf.AsLong! % 2));
 
-            return new SnailFishNumber(ToStringSpecial(node => node == leaf, _ => newNode, _ => false, _ => ""));
+            return Transform(
+                _ => false,
+                _ => throw new ApplicationException(),
+                node => node == leaf,
+                _ => new SnailNode(newNumber));
         }
 
         public SnailFishNumber Explode()
@@ -214,16 +232,13 @@ namespace AdventOfCode2021.Days.Day18
 
             if (leaves.Count == 0) return this;
 
-            var left = leaves[0].Item2.Left;
-            var right = leaves[0].Item2.Right;
+            var leaf = leaves[0].Item2;
+            var left = leaf.Left;
+            var right = leaf.Right;
 
             var nodes = Nodes().ToList();
 
             var index = nodes.IndexOf(left);
-
-            // sanity check
-            index.Should().BeGreaterThan(-1);
-            nodes[index + 1].Should().Be(right);
 
             var replacements = new Dictionary<SnailNode, SnailNode>();
 
@@ -237,50 +252,12 @@ namespace AdventOfCode2021.Days.Day18
                 replacements.Add(nodes[index + 2], new SnailNode((long)(nodes[index + 2].AsLong! + right.AsLong!)));
             }
 
-            return new SnailFishNumber(ToStringSpecial(
+            return Transform(
+                sfn => ReferenceEquals(sfn, leaf),
+                _ => new SnailNode(0),
                 node => replacements.ContainsKey(node),
-                node => replacements[node].ToString(),
-                sfn => sfn == leaves[0].Item2,
-                _ => "0"));
+                node => replacements[node]);
         }
-
-        //public SnailFishNumber Explode()
-        //{
-        //    var leaves = LeavesWithDepth()
-        //        .Where(node => node.Item1 > 4)
-        //        .Take(1)
-        //        .ToList();
-
-        //    if (leaves.Count == 0) return this;
-
-        //    var leaf = leaves[0];
-
-        //    var s = ToStringSpecial(node => node == leaf.Item2.Left || node == leaf.Item2.Right, _ => "*");
-
-        //    var leftStarIndex = s.IndexOf('*');
-        //    var rightStarIndex = s.LastIndexOf('*');
-            
-        //    var leftNumber = s.Take(leftStarIndex - 1).WithIndices().Reverse()
-        //        .SkipWhile(it => !IsNumber(it.Value)).TakeWhile(it => IsNumber(it.Value)).Reverse().ToList();
-
-        //    var rightNumber = s.WithIndices().Skip(rightStarIndex + 1).SkipWhile(it => !IsNumber(it.Value)).TakeWhile(it => IsNumber(it.Value)).ToList();
-
-        //    if (rightNumber.Any())
-        //    {
-        //        var rn = Convert.ToInt64(rightNumber.Select(it => it.Value).Join());
-        //        s = s.Substring(0, rightNumber[0].Index) + $"{rn + leaf.Item2.Right.AsLong!}" + s.Substring(rightNumber[^1].Index + 1);
-        //    }
-            
-        //    s = s.Substring(0, leftStarIndex - 1) + "0" + s.Substring(rightStarIndex + 2);
-
-        //    if (leftNumber.Any())
-        //    {
-        //        var ln = Convert.ToInt64(leftNumber.Select(it => it.Value).Join());
-        //        s = s.Substring(0, leftNumber[0].Index) + $"{ln + leaf.Item2.Left.AsLong!}" + s.Substring(leftNumber[^1].Index + 1);
-        //    }
-
-        //    return new SnailFishNumber(s);
-        //}
 
         private IEnumerable<(int, SnailFishNumber)> LeavesWithDepth()
         {
@@ -300,17 +277,27 @@ namespace AdventOfCode2021.Days.Day18
         private IEnumerable<SnailNode> Nodes()
         {
             if (Left.AsLong is { }) yield return Left;
-            else if (Left.AsSnailFishNumber is { } sfn)
+            else if (Left.AsSnailFishNumber is { } left)
             {
-                foreach (var item in sfn.Nodes()) yield return item;
+                foreach (var item in left.Nodes()) yield return item;
             }
 
             if (Right.AsLong is { }) yield return Right;
-            else if (Right.AsSnailFishNumber is { } sfn2)
+            else if (Right.AsSnailFishNumber is { } right)
             {
-                foreach (var item in sfn2.Nodes()) yield return item;
+                foreach (var item in right.Nodes()) yield return item;
             }
         }
 
+        public SnailFishNumber Transform(
+            Func<SnailFishNumber, bool> sfnMatch,
+            Func<SnailFishNumber, SnailNode> sfnTransform,
+            Func<SnailNode, bool> nodeMatch,
+            Func<SnailNode, SnailNode> nodeTransform)
+
+        {
+            SnailNode X(SnailNode node) => node.Transform(sfnMatch, sfnTransform, nodeMatch, nodeTransform);
+            return new SnailFishNumber(X(Left), X(Right));
+        }
     }
 }
