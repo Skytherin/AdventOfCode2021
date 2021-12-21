@@ -9,12 +9,6 @@ namespace AdventOfCode2021.Days.Day09
     [UsedImplicitly]
     public class Day09 : AdventOfCode<int[][]>
     {
-        public override string Example => @"2199943210
-3987894921
-9856789892
-8767896789
-9899965678";
-
         public override int[][] Parse(string s) => s.Lines().Select(line => line.Select(c => Convert.ToInt32($"{c}")).ToArray()).ToArray();
 
         [TestCase(Input.Example, 15)]

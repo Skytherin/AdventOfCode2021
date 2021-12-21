@@ -8,25 +8,6 @@ namespace AdventOfCode2021.Days.Day14
     [UsedImplicitly]
     public class Day14 : AdventOfCode<Day14Input>
     {
-        public override string Example => @"NNCB
-
-CH -> B
-HH -> N
-CB -> H
-NH -> C
-HB -> C
-HC -> B
-HN -> C
-NN -> C
-BH -> H
-NC -> B
-NB -> B
-BN -> B
-BB -> N
-BC -> B
-CC -> N
-CN -> C";
-
         public override Day14Input Parse(string input)
         {
             var p = input.Paragraphs().ToList();

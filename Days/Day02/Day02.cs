@@ -8,8 +8,6 @@ namespace AdventOfCode2021.Days.Day02
     [UsedImplicitly]
     public class Day02 : AdventOfCode<List<Day02Data>>
     {
-        public override string Example => "forward 5\ndown 5\nforward 8\nup 3\ndown 8\nforward 2";
-
         public override List<Day02Data> Parse(string s) => StructuredRx.ParseLines<Day02Data>(s);
 
         [TestCase(Input.Example, 150)]

@@ -4,8 +4,41 @@ using System.Linq;
 
 namespace AdventOfCode2021.Utils
 {
+
     public static class EnumerableExtensions
     {
+        public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> self)
+        {
+            return self.SelectMany(it => it);
+        }
+
+        public static IEnumerable<List<T>> Choose<T>(this IEnumerable<T> self, int k)
+        {
+            if (k <= 0) yield break;
+            var l = self.ToList();
+            if (k >= l.Count)
+            {
+                yield return l;
+                yield break;
+            }
+
+            if (k == 1)
+            {
+                foreach (var item in l) yield return new List<T> { item };
+                yield break;
+            }
+
+            var first = l[0];
+            foreach (var item in l.Skip(1).Choose(k - 1))
+            {
+                var result = new List<T> { first };
+                result.AddRange(item);
+                yield return result;
+            }
+
+            foreach (var item in l.Skip(1).Choose(k)) yield return item;
+        }
+
         public static long Product(this IEnumerable<long> self)
         {
             return self.Aggregate((current, value) => current * value);

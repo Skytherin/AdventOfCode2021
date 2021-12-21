@@ -14,6 +14,7 @@ namespace AdventOfCode2021.Utils
     public static class AdventOfCodeExtensions
     {
         public static string File(this IAdventOfCode self) => System.IO.File.ReadAllText($"Days/{self.GetType().Name}/Input.txt");
+        public static string Example(this IAdventOfCode self) => System.IO.File.ReadAllText($"Days/{self.GetType().Name}/Example.txt");
     }
 
     public abstract class AdventOfCode<T> : IAdventOfCode
@@ -28,7 +29,7 @@ namespace AdventOfCode2021.Utils
 
             if (part1TestCases.Union(part2TestCases).Any(it => it.Input == Input.Example))
             {
-                example.Add(Parse(Example));
+                example.Add(Parse(this.Example()));
             }
 
             if (part1TestCases.Union(part2TestCases).Any(it => it.Input == Input.File))
@@ -54,8 +55,6 @@ namespace AdventOfCode2021.Utils
 
         public abstract long Part1(T input);
         public abstract long Part2(T input);
-
-        public virtual string Example => "";
     }
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]

@@ -8,17 +8,6 @@ namespace AdventOfCode2021.Days.Day10
     [UsedImplicitly]
     public class Day10 : AdventOfCode<List<string>>
     {
-        public override string Example => @"[({(<(())[]>[[{[]{<()<>>
-[(()[<>])]({[<{<<[]>>(
-{([(<{}[<>[]}>{[]{[(<()>
-(((({<>}<{<{<>}{[]{[]{}
-[[<[([]))<([[{}[[()]]]
-[{[{({}]{}}([{[{{{}}([]
-{<[[]]>}<{[{[{[]{()[[[]
-[<(<(<(<{}))><([]([]()
-<{([([[(<>()){}]>(<<{{
-<{([{{}}[<[[[<>{}]]]>[]]";
-
         public override List<string> Parse(string s) => s.Lines();
 
         [TestCase(Input.Example, 26397)]

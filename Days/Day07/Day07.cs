@@ -9,8 +9,6 @@ namespace AdventOfCode2021.Days.Day07
     [UsedImplicitly]
     public class Day07 : AdventOfCode<List<long>>
     {
-        public override string Example => @"16,1,2,0,4,2,7,1,2,14";
-
         public override List<long> Parse(string s) => s.Split(",").Select(it => Convert.ToInt64(it)).ToList();
 
         [TestCase(Input.Example, 37)]

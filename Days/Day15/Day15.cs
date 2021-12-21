@@ -9,17 +9,6 @@ namespace AdventOfCode2021.Days.Day15
     [UsedImplicitly]
     public class Day15 : AdventOfCode<List<List<int>>>
     {
-        public override string Example => @"1163751742
-1381373672
-2136511328
-3694931569
-7463417111
-1319128137
-1359912421
-3125421639
-1293138521
-2311944581";
-
         public override List<List<int>> Parse(string input) => input.Lines().Select(it => it.Select(c => Convert.ToInt32($"{c}")).ToList()).ToList();
 
         [TestCase(Input.Example, 40)]

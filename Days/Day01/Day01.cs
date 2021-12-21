@@ -9,17 +9,6 @@ namespace AdventOfCode2021.Days.Day01
     [UsedImplicitly]
     public class Day01 : AdventOfCode<List<long>>
     {
-        public override string Example => @"199
-200
-208
-210
-200
-207
-240
-269
-260
-263";
-
         public override List<long> Parse(string input) => input.Lines().Select(it => Convert.ToInt64(it)).ToList();
 
         [TestCase(Input.Example, 7)]
