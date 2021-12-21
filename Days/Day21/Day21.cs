@@ -11,16 +11,16 @@ namespace AdventOfCode2021.Days.Day21
     {
         public void Run()
         {
-            //Part1();
-            Part2();
+            Part1(4, 8).Should().Be(739785);
+            Part1(6, 3).Should().Be(752745);
+            Part2(4, 8).Should().Be(444356092776315);
+            Part2(6, 3).Should().Be(309196008717909);
         }
 
-        private void Part1()
+        private long Part1(int p1Pos, int p2Pos)
         {
-            var p1score = 0;
-            var p2score = 0;
-            var p1pos = 6;
-            var p2pos = 3;
+            var p1Score = 0;
+            var p2Score = 0;
 
             var dieFace = 1;
             var dieRolled = 0;
@@ -35,10 +35,10 @@ namespace AdventOfCode2021.Days.Day21
                     dieRolled += 1;
                 }
 
-                p1pos = Increment(p1pos, dieTotal, 10);
-                p1score += p1pos;
+                p1Pos = Increment(p1Pos, dieTotal, 10);
+                p1Score += p1Pos;
 
-                if (p1score >= 1000) break;
+                if (p1Score >= 1000) break;
 
                 dieTotal = 0;
                 foreach (var _ in Enumerable.Range(0, 3))
@@ -48,19 +48,19 @@ namespace AdventOfCode2021.Days.Day21
                     dieRolled += 1;
                 }
 
-                p2pos = Increment(p2pos, dieTotal, 10);
-                p2score += p2pos;
+                p2Pos = Increment(p2Pos, dieTotal, 10);
+                p2Score += p2Pos;
 
-                if (p2score >= 1000) break;
+                if (p2Score >= 1000) break;
             }
 
-            // Part 1: 752745
+            return dieRolled * Math.Min(p1Score, p2Score);
         }
 
-        private void Part2()
+        private long Part2(int p1Pos, int p2Pos)
         {
-            var temp = FindCombinations(6, 3, 21, 21);
-            temp.Item1.Should().Be(309196008717909);
+            var x = FindCombinations(p1Pos, p2Pos, 21, 21);
+            return Math.Max(x.Item1, x.Item2);
         }
 
         private readonly Dictionary<(int, int, int, int), (long, long)> Cache = new();
