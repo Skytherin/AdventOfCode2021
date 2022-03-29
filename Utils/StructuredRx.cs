@@ -198,7 +198,7 @@ namespace AdventOfCode2021.Utils
 
         private static string Sanitize(string after)
         {
-            var replacables = new[] { '|', '+', '*', '\\', '[', '(', ']', ')'};
+            var replacables = new[] { '|', '+', '*', '\\', '[', '(', ']', ')', '.'};
             return after.Select(c => replacables.Contains(c) ? $"\\{c}" : $"{c}").Join();
         }
 

@@ -7,6 +7,18 @@ namespace AdventOfCode2021.Utils
 
     public static class EnumerableExtensions
     {
+        public static long Pin(this long self, int min, int max)
+        {
+            if (self < min) return min;
+            if (self > max) return max;
+            return self;
+        }
+
+        public static IEnumerable<long> Range2(long min, long max)
+        {
+            for (var x = min; x <= max; x++) yield return x;
+        }
+
         public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> self)
         {
             return self.SelectMany(it => it);
@@ -134,63 +146,6 @@ namespace AdventOfCode2021.Utils
 
                 return accum;
             });
-        }
-
-        public static TSource MaxBy<TSource, TKey>(
-            this IEnumerable<TSource> source,
-            Func<TSource, TKey> keySelector) where TSource : notnull
-        {
-            var comparer = Comparer<TKey>.Default;
-            return source.ArgBy(keySelector, lag => comparer.Compare(lag.Current, lag.Previous) > 0);
-        }
-
-        public static TSource MinBy<TSource, TKey>(
-            this IEnumerable<TSource> source,
-            Func<TSource, TKey> keySelector) where TSource : notnull
-        {
-            var comparer = Comparer<TKey>.Default;
-            return source.ArgBy(keySelector, lag => comparer.Compare(lag.Current, lag.Previous) < 0);
-        }
-
-        public static TSource ArgBy<TSource, TKey>(
-            this IEnumerable<TSource> source,
-            Func<TSource, TKey> keySelector,
-            Func<(TKey Current, TKey Previous), bool> predicate) where TSource : notnull
-        {
-            if (source == null) throw new ArgumentNullException(nameof(source));
-            if (keySelector == null) throw new ArgumentNullException(nameof(keySelector));
-            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
-            if (!source.Any()) new InvalidOperationException("Sequence contains no elements");
-
-            var value = source.First();
-            var key = keySelector(value);
-
-            bool hasValue = false;
-            foreach (var other in source)
-            {
-                var otherKey = keySelector(other);
-                if (otherKey == null) continue;
-
-                if (hasValue)
-                {
-                    if (predicate((otherKey, key)))
-                    {
-                        value = other;
-                        key = otherKey;
-                    }
-                }
-                else
-                {
-                    value = other;
-                    key = otherKey;
-                    hasValue = true;
-                }
-            }
-            if (hasValue)
-            {
-                return value;
-            }
-            throw new InvalidOperationException("Sequence contains no elements");
         }
 
         public static string Join<T>(this IEnumerable<T> self, string separator = "") =>

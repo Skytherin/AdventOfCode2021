@@ -43,5 +43,17 @@ namespace AdventOfCode2021.Utils
             Count--;
             return result;
         }
+
+        public bool TryDequeue(out T value)
+        {
+            if (Count == 0)
+            {
+                value = default!;
+                return false;
+            }
+
+            value = Dequeue();
+            return true;
+        }
     }
 }

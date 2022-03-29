@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using AdventOfCode2021.Utils;
 using FluentAssertions;
 
@@ -68,8 +67,9 @@ namespace AdventOfCode2021.Days.Day21
         // returns number of turns p1 wins, number of turns p2 wins
         private (long, long) FindCombinations(int start1, int start2, int remainingScore1, int remainingScore2)
         {
-            var key = (start1, start2, remainingScore1, remainingScore2);
-            if (Cache.TryGetValue(key, out var value)) return value;
+            var cacheKey = (start1, start2, remainingScore1, remainingScore2);
+            if (Cache.TryGetValue(cacheKey, out var value)) return value;
+
             var odds = new[] { (3, 1), (4, 3), (5, 6), (6, 7), (7, 6), (8, 3), (9, 1) };
 
             var wins = new long[]{0, 0};
@@ -100,7 +100,7 @@ namespace AdventOfCode2021.Days.Day21
                 }
             }
 
-            Cache[key] = (wins[0], wins[1]);
+            Cache[cacheKey] = (wins[0], wins[1]);
             return (wins[0], wins[1]);
         }
 

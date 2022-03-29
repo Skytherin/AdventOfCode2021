@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AdventOfCode2021.Utils;
 using JetBrains.Annotations;
@@ -24,12 +25,13 @@ namespace AdventOfCode2021.Days.Day02
         [TestCase(Input.File, 1488311643)]
         public override long Part2(List<Day02Data> input)
         {
-            var result = input.Aggregate(new { Depth = 0l, Position = 0l, Aim = 0l }, (accum, current) =>
+            var result = input.Aggregate(new { Depth = 0L, Position = 0L, Aim = 0L }, (accum, current) =>
                 current.Instruction switch
                 {
                     Day02Enum.Down => new { accum.Depth, accum.Position, Aim = accum.Aim + current.Magnitude },
                     Day02Enum.Up => new { accum.Depth, accum.Position, Aim = accum.Aim - current.Magnitude },
                     Day02Enum.Forward => new { Depth = accum.Depth + accum.Aim * current.Magnitude, Position = accum.Position + current.Magnitude, accum.Aim },
+                    _ => throw new ApplicationException()
                 }
             );
 

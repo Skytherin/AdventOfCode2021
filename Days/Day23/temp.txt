@@ -1,0 +1,41 @@
+Var0 = (Inp[0] + 1) * NotEql(11, Inp[0])
+Var1 = Var0 
+    * (25 * NotEql(Var0 % 26 + 10, Inp[1]) + 1) 
+    + (Inp[1] + 10) * NotEql(Var0 % 26 + 10, Inp[1])
+Var2 = Var1 
+    * (25 * NotEql(Var1 % 26 + 13, Inp[2]) + 1) 
+    + (Inp[2] + 2) * NotEql(Var1 % 26 + 13, Inp[2])
+Var3 = Var2 / 26 
+    * (25 * NotEql(Var2 % 26 + (-10), Inp[3]) + 1) 
+    + (Inp[3] + 5) * NotEql(Var2 % 26 + (-10), Inp[3])
+Var4 = Var3 * 
+    (25 * NotEql(Var3 % 26 + 11, Inp[4]) + 1) 
+    + (Inp[4] + 6) * NotEql(Var3 % 26 + 11, Inp[4])
+Var5 = Var4 
+    * (25 * NotEql(Var4 % 26 + 11, Inp[5]) + 1) 
+    + Inp[5] * NotEql(Var4 % 26 + 11, Inp[5])
+Var6 = Var5 
+    * (25 * NotEql(Var5 % 26 + 12, Inp[6]) + 1) 
+    + (Inp[6] + 16) * NotEql(Var5 % 26 + 12, Inp[6])
+Var7 = Var6 / 26 
+    * (25 * NotEql(Var6 % 26 + (-11), Inp[7]) + 1) 
+    + (Inp[7] + 12) * NotEql(Var6 % 26 + (-11), Inp[7])
+Var8 = Var7 / 26 
+    * (25 * NotEql(Var7 % 26 + (-7), Inp[8]) + 1) 
+    + (Inp[8] + 15) * NotEql(Var7 % 26 + (-7), Inp[8])
+Var9 = Var8 
+    * (25 * NotEql(Var8 % 26 + 13, Inp[9]) + 1) 
+    + (Inp[9] + 7) * NotEql(Var8 % 26 + 13, Inp[9])
+Var10 = Var9 / 26 
+    * (25 * NotEql(Var9 % 26 + (-13), Inp[10]) + 1) 
+    + (Inp[10] + 6) * NotEql(Var9 % 26 + (-13), Inp[10])
+Var11 = Var10 / 26 
+    * (25 * NotEql(Var10 % 26, Inp[11]) + 1) 
+    + (Inp[11] + 5) * NotEql(Var10 % 26, Inp[11])
+Var12 = Var11 / 26 
+    * (25 * NotEql(Var11 % 26 + (-11), Inp[12]) + 1) 
+    + (Inp[12] + 6) * NotEql(Var11 % 26 + (-11), Inp[12])
+Z = 
+    Var12 / 26 
+        * (25 * NotEql(Var12 % 26, Inp[13]) + 1) 
+        + (Inp[13] + 15) * NotEql(Var12 % 26, Inp[13])
